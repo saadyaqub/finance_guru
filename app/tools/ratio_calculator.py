@@ -181,7 +181,7 @@ def equity_multiplier(total_equity: float, total_assets: float) -> float:
 
 
 ############################################################################
-#                        Profatibility Ratios                              #
+#                        Profitability Ratios                              #
 ############################################################################
 
 # Return on Assets (ROA)
@@ -276,3 +276,152 @@ def operating_margin(operating_income: float, total_revenue: float) -> float:
     if total_revenue <= 0:
         raise ValueError("Total revenue must be greater than zero.")
     return operating_income / total_revenue
+
+############################################################################
+#                        Efficiency Ratios                                 #
+############################################################################
+
+# Inventory Turnover (average balance method - preferred)
+
+def inventory_turnover(cogs: float, opening_inventory: float, closing_inventory: float) -> float:
+    """Measures how many times a company sells and replaces its inventory over a period,
+    using the average of opening and closing inventory balances.
+
+    Args:
+        cogs (float): Cost of goods sold for the period.
+        opening_inventory (float): Inventory value at the start of the period.
+        closing_inventory (float): Inventory value at the end of the period.
+
+    Returns:
+        float: Inventory turnover calculated as cogs / average inventory.
+
+    Raises:
+        ValueError: If opening_inventory or closing_inventory is negative.
+        ValueError: If average inventory is zero.
+    """
+    if opening_inventory < 0 or closing_inventory < 0:
+        raise ValueError("Inventory values cannot be negative.")
+
+    average_inventory = (opening_inventory + closing_inventory) / 2
+
+    if average_inventory == 0:
+        raise ValueError("Average inventory cannot be zero.")
+
+    return cogs / average_inventory
+
+
+# Inventory Turnover (closing balance only - explicit fallback)
+
+def inventory_turnover_closing_only(cogs: float, closing_inventory: float) -> float:
+    """Measures inventory turnover using only the closing inventory balance.
+    Use only when opening balance data is unavailable - less accurate than the
+    average-balance method, especially for seasonal businesses.
+
+    Args:
+        cogs (float): Cost of goods sold for the period.
+        closing_inventory (float): Inventory value at the end of the period.
+
+    Returns:
+        float: Inventory turnover calculated as cogs / closing_inventory.
+
+    Raises:
+        ValueError: If closing_inventory is negative or zero.
+    """
+    if closing_inventory <= 0:
+        raise ValueError("Closing inventory must be greater than zero.")
+
+    return cogs / closing_inventory
+
+
+# Receivables Turnover (average balance method - preferred)
+
+def receivables_turnover(revenue: float, opening_accounts_receivable: float, closing_accounts_receivable: float) -> float:
+    """Measures how efficiently a company collects payment from customers,
+    using the average of opening and closing accounts receivable balances.
+
+    Args:
+        revenue (float): Total revenue for the period.
+        opening_accounts_receivable (float): Accounts receivable at the start of the period.
+        closing_accounts_receivable (float): Accounts receivable at the end of the period.
+
+    Returns:
+        float: Receivables turnover calculated as revenue / average accounts receivable.
+
+    Raises:
+        ValueError: If opening_accounts_receivable or closing_accounts_receivable is negative.
+        ValueError: If average accounts receivable is zero.
+    """
+    if opening_accounts_receivable < 0 or closing_accounts_receivable < 0:
+        raise ValueError("Accounts receivable values cannot be negative.")
+
+    average_receivables = (opening_accounts_receivable + closing_accounts_receivable) / 2
+
+    if average_receivables == 0:
+        raise ValueError("Average accounts receivable cannot be zero.")
+
+    return revenue / average_receivables
+
+
+# Receivables Turnover (closing balance only - explicit fallback)
+
+def receivables_turnover_closing_only(revenue: float, closing_accounts_receivable: float) -> float:
+    """Measures receivables turnover using only the closing accounts receivable balance.
+    Use only when opening balance data is unavailable.
+
+    Args:
+        revenue (float): Total revenue for the period.
+        closing_accounts_receivable (float): Accounts receivable at the end of the period.
+
+    Returns:
+        float: Receivables turnover calculated as revenue / closing_accounts_receivable.
+
+    Raises:
+        ValueError: If closing_accounts_receivable is negative or zero.
+    """
+    if closing_accounts_receivable <= 0:
+        raise ValueError("Closing accounts receivable must be greater than zero.")
+
+    return revenue / closing_accounts_receivable
+
+
+# Days Sales Outstanding
+
+def days_sales_outstanding(receivables_turnover_value: float) -> float:
+    """Calculates the average number of days it takes to collect payment after a sale.
+
+    Args:
+        receivables_turnover_value (float): A pre-computed receivables turnover value,
+            from either receivables_turnover() or receivables_turnover_closing_only().
+
+    Returns:
+        float: Days sales outstanding calculated as 365 / receivables_turnover_value.
+
+    Raises:
+        ValueError: If receivables_turnover_value is zero or negative.
+    """
+    if receivables_turnover_value <= 0:
+        raise ValueError("Receivables turnover value must be greater than zero.")
+
+    return 365 / receivables_turnover_value
+
+
+# Asset Turnover
+
+def asset_turnover(revenue: float, total_assets: float) -> float:
+    """Measures how efficiently a company uses its assets to generate revenue.
+
+    Args:
+        revenue (float): Total revenue for the period.
+        total_assets (float): Total assets (closing balance, or average if available).
+
+    Returns:
+        float: Asset turnover calculated as revenue / total_assets.
+
+    Raises:
+        ValueError: If total_assets is zero or negative.
+    """
+    if total_assets <= 0:
+        raise ValueError("Total assets must be greater than zero.")
+
+    return revenue / total_assets
+

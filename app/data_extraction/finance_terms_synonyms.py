@@ -1,6 +1,27 @@
 # This file has the synonyms for all the financial terms used in 
 # ratio_calculator.py. 
 
+# This file has the synonyms for all the financial terms used in
+# ratio_calculator.py.
+#
+# Design notes (from review):
+# - "ebit" and "operating_income" are kept as separate canonical fields,
+#   but their synonym lists must NOT overlap -- a label like "Operating Profit"
+#   needs to resolve to exactly one field, not both. If your source documents
+#   only ever report one of the two, the mapping/report-building step (not
+#   this file) can decide whether it's acceptable to fill the other from the
+#   same figure -- that's a deliberate business-logic decision, not something
+#   to bury silently in the synonym list.
+# - Removed "total liabilities and equity" and "total assets and liabilities"
+#   from total_liabilities/total_assets -- these refer to the COMBINED total
+#   of both sides of the balance sheet, not one side alone. Including them
+#   would silently make total_liabilities == total_assets.
+# - Removed "total debt" from total_liabilities -- "total debt" conventionally
+#   means interest-bearing borrowings only, a subset of total liabilities,
+#   not the full figure.
+# - Bare abbreviations ("ca", "cl") are kept but are the highest false-positive
+#   risk in this file if fuzzy matching is ever added on top -- worth watching.
+
 SYNONYM_MAP = {
     "current_assets": [
         "current assets",
@@ -41,8 +62,6 @@ SYNONYM_MAP = {
         "liabilities",
         "total liabilities (total)",
         "liabilities total",
-        "total liabilities and equity",
-        "total debt",
     ],
     "total_equity": [
         "total equity",
@@ -60,7 +79,6 @@ SYNONYM_MAP = {
         "assets",
         "total assets (total)",
         "assets total",
-        "total assets and liabilities",
     ],
     "net_income": [
         "net income",
@@ -95,8 +113,6 @@ SYNONYM_MAP = {
     "ebit": [
         "ebit",
         "earnings before interest and tax",
-        "operating profit",
-        "operating income (ebit)",
         "profit before interest and tax",
         "pbit",
     ],
@@ -114,7 +130,6 @@ SYNONYM_MAP = {
         "operating profit",
         "income from operations",
         "operating earnings",
-        "operating income (ebit)",
         "profit from operations",
     ],
     "opening_inventory": [
